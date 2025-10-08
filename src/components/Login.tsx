@@ -1,17 +1,28 @@
 import React, { useState } from 'react';
 import '../App.css';
 import Dashboard from './Dashboard';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../features/authSlice';
+import type { RootState } from '../store';
 
 const validCredentials = {
   username: 'admin',
   password: 'password123',
 };
 
-function useLoginForm() {
+
+const validCredentials = {
+  username: 'admin',
+  password: 'password123',
+};
+
+
+const Login: React.FC = () => {
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
 
   const validate = () => {
     if (!username || !password) {
@@ -29,37 +40,14 @@ function useLoginForm() {
       username === validCredentials.username &&
       password === validCredentials.password
     ) {
-      setSuccess(true);
+      dispatch(login(username));
       setError('');
     } else {
       setError('Invalid username or password');
-      setSuccess(false);
     }
   };
 
-  return {
-    username,
-    setUsername,
-    password,
-    setPassword,
-    error,
-    success,
-    handleSubmit,
-  };
-}
-
-const Login: React.FC = () => {
-  const {
-    username,
-    setUsername,
-    password,
-    setPassword,
-    error,
-    success,
-    handleSubmit,
-  } = useLoginForm();
-
-  if (success) {
+  if (isAuthenticated) {
     return <Dashboard />;
   }
 
